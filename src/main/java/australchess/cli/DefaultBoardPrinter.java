@@ -6,26 +6,24 @@ import java.util.Optional;
 // Improve or create a new implementation if you like, this is a naive implementation
 public class DefaultBoardPrinter implements BoardPrinter {
     @Override
-    public String print(List<BoardPosition> positions) {
-        var files = List.of('h', 'g', 'f', 'e', 'd', 'c', 'b', 'a');
-        var ranks = List.of(1, 2, 3, 4, 5, 6, 7, 8);
+    public String print(Board board) {
         var builder = new StringBuilder();
 
-        for(var file : files) {
+        for(var file : board.getFiles()) {
             builder.append(file).append("|");
-            for(var rank : ranks) {
-                var toPrint = findPiece(file, rank, positions).orElse(' ');
+            for(var rank : board.getRanks()) {
+                var toPrint = findPiece(file, rank, board).orElse(' ');
                 builder.append(toPrint).append("|");
             }
             builder.append("\n");
         }
         builder.append("  ");
-        ranks.forEach(r -> builder.append(r).append(" "));
+        board.getRanks().forEach(r -> builder.append(r).append(" "));
         builder.append("\n");
         return builder.toString();
     }
 
-    private static Optional<Character> findPiece(Character file, Integer rank, List<BoardPosition> positions) {
-        return positions.stream().filter(p -> p.getLetter() == file && p.getNumber().equals(rank)).findFirst().map(BoardPosition::getPieceId);
+    private static Optional<Character> findPiece(Character file, Integer rank, Board board) {
+        return board.getPositions().stream().filter(p -> p.getLetter() == file && p.getNumber().equals(rank)).findFirst().map(BoardPosition::getPieceId);
     }
 }
