@@ -1,15 +1,13 @@
 package australchess.cli;
 
-import australchess.cli.piece.Piece;
+import lombok.Getter;
 
 public class Player {
-    String playingColor;
-    Piece[] pieceSet;
-    boolean isChecked;
+    @Getter String playingColor;
+    @Getter String name;
 
-    Player (String playingColor, Piece[] pieceSet) {
+    Player (String playingColor, String name) {
         this.playingColor = playingColor;
-        this.pieceSet = pieceSet;
-        isChecked = false;
+        this.name = name;
     }
 }

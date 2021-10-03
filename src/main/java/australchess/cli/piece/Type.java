@@ -1,4 +1,4 @@
-package australchess.cli;
+package australchess.cli.piece;
 
 public enum Type {
     KING,

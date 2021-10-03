@@ -1,5 +1,7 @@
 package australchess.cli;
 
+import australchess.cli.board.ParsedPosition;
+import australchess.cli.board.ParsedPositionParser;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -9,8 +11,8 @@ import static org.assertj.core.api.Assertions.*;
 public class ParsedPositionParserTest {
 
     @Test
-    public void can_parse_3_e() {
-        var toTest = "(3,e)";
+    public void can_parse_e_3() {
+        var toTest = "(e,3)";
         Optional<ParsedPosition> position = ParsedPositionParser.parse(toTest);
         assertThat(position).isPresent();
         assertThat(position).map(ParsedPosition::getNumber).hasValue(3);
@@ -18,8 +20,8 @@ public class ParsedPositionParserTest {
     }
 
     @Test
-    public void cannot_parse_e_3() {
-        var toTest = "(e,3)";
+    public void cannot_parse_3_e() {
+        var toTest = "(3,e)";
         Optional<ParsedPosition> position = ParsedPositionParser.parse(toTest);
         assertThat(position).isNotPresent();
     }

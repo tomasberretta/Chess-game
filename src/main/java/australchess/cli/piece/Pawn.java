@@ -1,11 +1,20 @@
 package australchess.cli.piece;
 
-import australchess.cli.Type;
+import australchess.cli.movegenerator.PawnMoveGenerator;
+import lombok.Getter;
+import lombok.Setter;
+
 
 public class Pawn extends Piece{
-    public Pawn(String color) {
+    @Getter @Setter
+    boolean moved;
+
+    public Pawn(String color, boolean lowerCase) {
         super(color);
         this.id = 'P';
+        if (lowerCase) id = Character.toLowerCase(id);
         this.type = Type.PAWN;
+        moved = false;
+        moveGenerator = new PawnMoveGenerator();
     }
 }

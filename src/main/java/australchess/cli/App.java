@@ -1,13 +1,13 @@
 package australchess.cli;
 
-import com.github.lalyos.jfiglet.FigletFont;
+import australchess.cli.board.*;
+import australchess.cli.movegenerator.MoveResult;
+import australchess.cli.piece.DefaultPieceSetFactory;
+import australchess.cli.piece.PieceSetFactory;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Scanner;
 
 // Starter CLI interface for the chess game, modify as you wish.
-// TODO: Fill in!
 public class App {
     static Player[] players;
     static Board board;
@@ -15,56 +15,64 @@ public class App {
     static Status status;
     static BoardFactory boardFactory;
     static PieceSetFactory pieceSetFactory;
+    static IO io;
 
     public static void main(String[] args) throws IOException {
 
+        io = new IO();
 
         final BoardPrinter boardPrinter = new DefaultBoardPrinter();
 
         printHeader();
-//        final var firstPlayerId = askForString("Name of player that moves white: ");
-//        final var secondPlayerId = askForString("Name of player that moves black: ");
 
         setUpGame(2, new String[]{"White", "Black"}, "Default");
 
-        System.out.println();
-        System.out.println();
+        printSpaces(2);
 
         while(shouldContinue()) {
             printCurrentPlayerTurn();
-            System.out.println();
+            printSpaces(1);
             printBoard(boardPrinter, board);
             final var positionFrom = askForPosition("Enter position of the piece you want to move");
             final var positionTo = askForPosition("Enter position of cell you want to move it to");
-            move(positionFrom, positionTo);
-            System.out.println();
-            System.out.println();
+            try {
+                move(positionFrom, positionTo);
+            }catch (Exception e){
+                printSpaces(2);
+                System.out.println(e.getMessage());
+            }
+            printSpaces(2);
         }
     }
 
     private static void setUpGame(int numberOfPlayers, String[] playerColors, String variation){
-        pieceSetFactory = new DefaultPieceSetFactory();
         boardFactory = new DefaultBoardFactory();
+        pieceSetFactory = new DefaultPieceSetFactory();
         players = new Player[numberOfPlayers];
         for (int i = 0; i < numberOfPlayers; i++) {
-            players[i] = new Player(playerColors[i], pieceSetFactory.makePieceSet(playerColors[i]));
+            final var playerID = askForString("Name of player that moves "+playerColors[i]+": ");
+            players[i] = new Player(playerColors[i], playerID);
         }
-        board = boardFactory.makeBoard(players);
+        board = boardFactory.makeBoard(pieceSetFactory, players);
         playerTurn = 0;
         status = Status.PLAYING;
     }
 
     private static void printBoard(BoardPrinter boardPrinter, Board board) {
-        var boardAsString = boardPrinter.print(board);
-        System.out.println(boardAsString);
+        io.printBoard(boardPrinter, board);
     }
 
-    private static void move(ParsedPosition from, ParsedPosition to) {
+    private static void move(ParsedPosition from, ParsedPosition to) throws IOException {
+        MoveResult moveResult = board.movePiece(from, to, players[playerTurn].getPlayingColor());
+        status = moveResult.getStatus();
         if (playerTurn >= players.length-1) playerTurn = 0;
         else ++playerTurn;
     }
 
     private static String playerToMove() {
+        return players[playerTurn].name;
+    }
+    private static String playerToColorMove() {
         return players[playerTurn].playingColor;
     }
 
@@ -73,26 +81,22 @@ public class App {
     }
 
     private static ParsedPosition askForPosition(String question) {
-        System.out.println(question);
-        System.out.print("Enter in format -> (number,letter): ");
-        var scanner = new Scanner(System.in);
-        var positionAsString = scanner.nextLine();
-        return ParsedPositionParser.parse(positionAsString)
-                .orElseGet(() -> askForPosition("The position " + positionAsString + " is invalid. Please enter a new one"));
+        return io.askForPosition(question);
     }
 
     private static void printCurrentPlayerTurn() {
-        System.out.println("It's " + playerToMove() + " turn!");
+        io.printCurrentPlayerTurn(playerToMove(), playerToColorMove());
+    }
+
+    private static void printSpaces (int n){
+        io.printSpaces(n);
     }
 
     private static String askForString(String question) {
-        System.out.println(question);
-        var scanner = new Scanner(System.in);
-        return scanner.nextLine();
+        return io.askForString(question);
     }
 
     private static void printHeader() throws IOException {
-        String header = FigletFont.convertOneLine("AustralChess");
-        System.out.println(header);
+        io.printHeader();
     }
 }
