@@ -1,7 +1,7 @@
 package australchess.cli;
 
-import australchess.cli.board.ParsedPosition;
-import australchess.cli.board.ParsedPositionParser;
+import australchess.board.ParsedPosition;
+import australchess.board.ParsedPositionParser;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

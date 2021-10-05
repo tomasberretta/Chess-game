@@ -1,13 +1,13 @@
 package australchess.cli;
 
-import australchess.cli.board.Board;
-import australchess.cli.board.BoardFactory;
-import australchess.cli.board.DefaultBoardFactory;
-import australchess.cli.board.ParsedPosition;
-import australchess.cli.piece.DefaultPieceSetFactory;
-import australchess.cli.piece.Piece;
-import australchess.cli.piece.PieceSetFactory;
-import australchess.cli.piece.Type;
+import australchess.board.Board;
+import australchess.board.BoardFactory;
+import australchess.board.DefaultBoardFactory;
+import australchess.board.ParsedPosition;
+import australchess.piece.DefaultPieceSetFactory;
+import australchess.piece.Piece;
+import australchess.piece.PieceSetFactory;
+import australchess.piece.Type;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

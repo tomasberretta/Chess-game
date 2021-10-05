@@ -1,9 +1,9 @@
 package australchess.cli;
 
-import australchess.cli.board.Board;
-import australchess.cli.board.BoardPrinter;
-import australchess.cli.board.ParsedPosition;
-import australchess.cli.board.ParsedPositionParser;
+import australchess.board.Board;
+import australchess.board.BoardPrinter;
+import australchess.board.ParsedPosition;
+import australchess.board.ParsedPositionParser;
 import com.github.lalyos.jfiglet.FigletFont;
 
 import java.io.IOException;

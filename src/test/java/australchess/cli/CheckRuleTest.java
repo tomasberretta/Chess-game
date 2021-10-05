@@ -1,11 +1,11 @@
 package australchess.cli;
 
-import australchess.cli.board.*;
-import australchess.cli.movegenerator.MoveResult;
-import australchess.cli.piece.DefaultPieceSetFactory;
-import australchess.cli.piece.Piece;
-import australchess.cli.piece.PieceSetFactory;
-import australchess.cli.piece.Type;
+import australchess.board.*;
+import australchess.movegenerator.MoveResult;
+import australchess.piece.DefaultPieceSetFactory;
+import australchess.piece.Piece;
+import australchess.piece.PieceSetFactory;
+import australchess.piece.Type;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
