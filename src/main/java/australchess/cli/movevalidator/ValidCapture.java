@@ -2,6 +2,7 @@ package australchess.cli.movevalidator;
 
 import australchess.cli.board.Board;
 import australchess.cli.movegenerator.Move;
+import australchess.cli.piece.Type;
 
 public class ValidCapture implements MoveValidator {
     @Override

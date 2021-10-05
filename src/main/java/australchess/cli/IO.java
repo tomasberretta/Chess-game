@@ -24,6 +24,10 @@ public class IO {
         System.out.println("It's " + name + " turn, playing as: "+ color);
     }
 
+    public void printCurrentStatus(Status status) {
+        System.out.println("Current status:  " + status.toString());
+    }
+
     public String askForString(String question) {
         System.out.println(question);
         var scanner = new Scanner(System.in);

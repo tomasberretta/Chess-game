@@ -17,4 +17,8 @@ public @Data class BoardPosition {
         this.number = number;
         this.letter = letter;
     }
+
+    public String getCoordinates(){
+        return "("+ letter + "," + number + ")";
+    }
 }
