@@ -1,8 +1,7 @@
 package australchess.cli;
 
 import australchess.board.*;
-import australchess.movegenerator.Move;
-import australchess.movegenerator.MoveResult;
+import australchess.movevalidator.*;
 import australchess.piece.DefaultPieceSetFactory;
 import australchess.piece.Piece;
 import australchess.piece.PieceSetFactory;
@@ -20,6 +19,7 @@ public class App {
     static BoardFactory boardFactory;
     static PieceSetFactory pieceSetFactory;
     static CheckDetector checkDetector;
+    static MoveValidator moveValidator;
     static List<MoveResult> moves;
     static IO io;
 
@@ -42,8 +42,10 @@ public class App {
             printBoard(boardPrinter, board);
             final var positionFrom = askForPosition("Enter position of the piece you want to move");
             final var positionTo = askForPosition("Enter position of cell you want to move it to");
+            ValidateResult validateResult = validateMove(positionFrom,positionTo);
             try {
-                move(positionFrom, positionTo);
+                if(!validateResult.isValid()) throw new IOException(validateResult.getMessage());
+                else move(positionFrom, positionTo);
             }catch (IOException e){
                 printSpaces(2);
                 System.out.println(e.getMessage());
@@ -74,7 +76,8 @@ public class App {
     private static void setUpGame(int numberOfPlayers, String[] playerColors, String variation){
         boardFactory = new DefaultBoardFactory();
         pieceSetFactory = new DefaultPieceSetFactory();
-        checkDetector = new DefaultCheckDetector();
+        moveValidator = new DefaultMoveValidator();
+        checkDetector = new DefaultCheckDetector(moveValidator);
         players = new Player[numberOfPlayers];
         moves = new ArrayList<>();
         for (int i = 0; i < numberOfPlayers; i++) {
@@ -91,10 +94,14 @@ public class App {
     }
 
     private static void move(ParsedPosition from, ParsedPosition to) throws IOException {
-        MoveResult moveResult = board.movePiece(from, to, players[playerTurn].getPlayingColor());
+        MoveResult moveResult = board.movePiece(from, to);
         moves.add(moveResult);
         if (playerTurn >= players.length-1) playerTurn = 0;
         else ++playerTurn;
+    }
+
+    public static ValidateResult validateMove(ParsedPosition from, ParsedPosition to){
+        return moveValidator.validate(board.getBoardPositionFromParsed(from), board.getBoardPositionFromParsed(to), board, playerToColorMove());
     }
 
     private static void printCurrentStatus(){
@@ -127,14 +134,12 @@ public class App {
         List<Move> moves = new ArrayList<>();
         for (BoardPosition boardPosition : board.getPositionsByColor(playerToColorMove())) {
             for (BoardPosition position : board.getPositions()) {
-                try {
-                    MoveResult moveResult = board.validateMovePiece(boardPosition, position, playerToColorMove());
-                    if(moveResult != null){
-                        moves.add(moveResult.getMove());
-                        return moves;
-                    }
-                } catch (IOException ignored) {
+                ValidateResult validateResult = moveValidator.validate(boardPosition, position, board, playerToColorMove());
+                if(validateResult.isValid()){
+                    moves.add(new Move(boardPosition, position));
+                    return moves;
                 }
+
             }
         }
         return moves;

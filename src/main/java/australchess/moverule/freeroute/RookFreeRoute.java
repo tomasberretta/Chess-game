@@ -1,9 +1,11 @@
-package australchess.movevalidator;
+package australchess.moverule.freeroute;
 
 import australchess.board.Board;
-import australchess.movegenerator.Move;
+import australchess.movevalidator.Move;
+import australchess.piece.Type;
 
 public class RookFreeRoute implements FreeRoute {
+    Type type = Type.ROOK;
     @Override
     public boolean validate(Move move, Board board) {
         int numFrom = move.getFrom().getNumber();
@@ -33,5 +35,10 @@ public class RookFreeRoute implements FreeRoute {
             }
         }
         return true;
+    }
+
+    @Override
+    public Type getType() {
+        return type;
     }
 }

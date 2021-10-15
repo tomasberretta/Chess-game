@@ -1,9 +1,12 @@
-package australchess.movevalidator;
+package australchess.moverule.freeroute;
 
 import australchess.board.Board;
-import australchess.movegenerator.Move;
+import australchess.movevalidator.Move;
+import australchess.piece.Type;
 
 public class BishopFreeRoute implements FreeRoute {
+    Type type = Type.BISHOP;
+
     @Override
     public boolean validate(Move move, Board board) {
         int srcY = move.getFrom().getNumber();
@@ -18,5 +21,10 @@ public class BishopFreeRoute implements FreeRoute {
             if (board.getPosition((char) (srcX+i*dirX), srcY+i*dirY).getPiece() != null) return false;
         }
         return true;
+    }
+
+    @Override
+    public Type getType() {
+        return type;
     }
 }

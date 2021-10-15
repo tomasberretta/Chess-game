@@ -1,6 +1,5 @@
 package australchess.piece;
 
-import australchess.movegenerator.QueenMoveGenerator;
 
 public class Queen extends Piece {
     public Queen(String color, boolean lowerCase) {
@@ -8,7 +7,6 @@ public class Queen extends Piece {
         this.id = 'Q';
         if (lowerCase) id = Character.toLowerCase(id);
         this.type = Type.QUEEN;
-        moveGenerator = new QueenMoveGenerator();
 
     }
 }

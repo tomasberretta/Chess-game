@@ -1,14 +1,15 @@
 package australchess.cli;
 
 import australchess.board.*;
-import australchess.movegenerator.MoveResult;
+import australchess.movevalidator.DefaultMoveValidator;
+import australchess.movevalidator.MoveValidator;
+import australchess.movevalidator.ValidateResult;
 import australchess.piece.DefaultPieceSetFactory;
 import australchess.piece.Piece;
 import australchess.piece.PieceSetFactory;
 import australchess.piece.Type;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,6 +17,7 @@ public class CheckRuleTest {
     static Board board;
     static BoardFactory boardFactory = new DefaultBoardFactory();
     static PieceSetFactory pieceSetFactory = new DefaultPieceSetFactory();
+    static MoveValidator moveValidator = new DefaultMoveValidator();
     static IO io = new IO();
 
     public void setUp(){
@@ -34,14 +36,12 @@ public class CheckRuleTest {
         boardFactory.addPieceToBoard(board, pieces[1], 4,7);
         boardFactory.addPieceToBoard(board, pieces[2], 3,7);
 
-        try {
-            board.movePiece(new ParsedPosition('e', 5),new ParsedPosition('d', 4), "Black");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("This move would put player on check");
-
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 5),new ParsedPosition('d', 4), board,  "Black");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 5),new ParsedPosition('d', 4));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
-
+        assertThat(validateResult.getMessage()).isEqualTo("This move would put player on check");
         assertThat(board.getPosition('e',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',8).getPiece()).isNotNull();
     }
@@ -58,14 +58,12 @@ public class CheckRuleTest {
         boardFactory.addPieceToBoard(board, pieces[1], 4,7);
         boardFactory.addPieceToBoard(board, pieces[2], 3,7);
 
-        try {
-            board.movePiece(new ParsedPosition('e', 5),new ParsedPosition('d', 5), "Black");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("This move would put player on check");
-
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 5),new ParsedPosition('d', 5), board,  "Black");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 5),new ParsedPosition('d', 5));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
-
+        assertThat(validateResult.getMessage()).isEqualTo("This move would put player on check");
         assertThat(board.getPosition('e',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',8).getPiece()).isNotNull();
 
@@ -83,14 +81,12 @@ public class CheckRuleTest {
         boardFactory.addPieceToBoard(board, pieces[1], 4,7);
         boardFactory.addPieceToBoard(board, pieces[2], 3,7);
 
-        try {
-            board.movePiece(new ParsedPosition('e', 5),new ParsedPosition('f', 6), "Black");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("This move would put player on check");
-
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 5),new ParsedPosition('f', 6), board,  "Black");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 5),new ParsedPosition('f', 6));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
-
+        assertThat(validateResult.getMessage()).isEqualTo("This move would put player on check");
         assertThat(board.getPosition('e',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',8).getPiece()).isNotNull();
 
@@ -108,14 +104,12 @@ public class CheckRuleTest {
         boardFactory.addPieceToBoard(board, pieces[1], 4,7);
         boardFactory.addPieceToBoard(board, pieces[2], 3,7);
 
-        try {
-            board.movePiece(new ParsedPosition('e', 5),new ParsedPosition('f', 7), "Black");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("This move would put player on check");
-
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 5),new ParsedPosition('f', 7), board,  "Black");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 5),new ParsedPosition('f', 7));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
-
+        assertThat(validateResult.getMessage()).isEqualTo("This move would put player on check");
         assertThat(board.getPosition('e',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',8).getPiece()).isNotNull();
 
@@ -130,14 +124,13 @@ public class CheckRuleTest {
         pieces = pieceSetFactory.makeSpecificPieceSet("White", false, new Type[]{Type.QUEEN, Type.KING});
         boardFactory.addPieceToBoard(board, pieces[0], 4,7);
         boardFactory.addPieceToBoard(board, pieces[1], 3,7);
-        try {
-            board.movePiece(new ParsedPosition('d', 8),new ParsedPosition('e', 8), "Black");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("This move would put player on check");
 
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('d', 8),new ParsedPosition('e', 8), board,  "Black");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('d', 8),new ParsedPosition('e', 8));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
-
+        assertThat(validateResult.getMessage()).isEqualTo("This move would put player on check");
         assertThat(board.getPosition('d',8).getPiece()).isNotNull();
     }
 
@@ -153,17 +146,13 @@ public class CheckRuleTest {
         boardFactory.addPieceToBoard(board, pieces[1], 4,7);
         boardFactory.addPieceToBoard(board, pieces[2], 3,7);
 
-        MoveResult moveResult = null;
-        try {
-            moveResult = board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('d', 5), "White");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("This move would put player on check");
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 4),new ParsedPosition('d', 5), board, "White");
+        assertThat(validateResult.isValid()).isTrue();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('d', 5));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
-
         assertThat(board.getPosition('d',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',4).getPiece()).isNull();
-        assertThat(moveResult).isNotNull();
     }
 
     @Test
@@ -178,16 +167,13 @@ public class CheckRuleTest {
         boardFactory.addPieceToBoard(board, pieces[1], 4,7);
         boardFactory.addPieceToBoard(board, pieces[2], 3,7);
 
-        MoveResult moveResult = null;
-        try {
-            moveResult = board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('f', 5), "White");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("This move would put player on check");
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 4),new ParsedPosition('f', 5), board, "White");
+        assertThat(validateResult.isValid()).isTrue();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('f', 5));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
         assertThat(board.getPosition('d',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',4).getPiece()).isNull();
-        assertThat(moveResult).isNotNull();
     }
 
     @Test
@@ -202,16 +188,13 @@ public class CheckRuleTest {
         boardFactory.addPieceToBoard(board, pieces[1], 4,7);
         boardFactory.addPieceToBoard(board, pieces[2], 3,7);
 
-        MoveResult moveResult = null;
-        try {
-            moveResult = board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('f', 4), "White");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("This move would put player on check");
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 4),new ParsedPosition('f', 4), board, "White");
+        assertThat(validateResult.isValid()).isTrue();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('f', 4));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
         assertThat(board.getPosition('d',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',4).getPiece()).isNull();
-        assertThat(moveResult).isNotNull();
     }
 
     @Test
@@ -226,16 +209,13 @@ public class CheckRuleTest {
         boardFactory.addPieceToBoard(board, pieces[1], 4,7);
         boardFactory.addPieceToBoard(board, pieces[2], 3,7);
 
-        MoveResult moveResult = null;
-        try {
-            moveResult = board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('c', 3), "White");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("This move would put player on check");
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 4),new ParsedPosition('c', 3), board, "White");
+        assertThat(validateResult.isValid()).isTrue();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('c', 3));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
         assertThat(board.getPosition('d',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',4).getPiece()).isNull();
-        assertThat(moveResult).isNotNull();
     }
 
     @Test
@@ -249,18 +229,13 @@ public class CheckRuleTest {
         boardFactory.addPieceToBoard(board, pieces[0], 4,4);
         boardFactory.addPieceToBoard(board, pieces[1], 3,7);
 
-        io.printBoard(new DefaultBoardPrinter(), board);
-
-        MoveResult moveResult = null;
-        try {
-            moveResult = board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('c', 3), "White");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("This move would put player on check");
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 4),new ParsedPosition('c', 3), board, "White");
+        assertThat(validateResult.isValid()).isTrue();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('c', 3));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
         assertThat(board.getPosition('d',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',4).getPiece()).isNull();
-        assertThat(moveResult).isNotNull();
         assertThat(board.getPosition('e',8).getPiece()).isNotNull();
 
     }

@@ -1,11 +1,10 @@
 package australchess.movevalidator;
 
 import australchess.board.Board;
-import australchess.movegenerator.Move;
-
-import java.io.IOException;
+import australchess.board.BoardPosition;
+import australchess.board.ParsedPosition;
 
 public interface MoveValidator {
-
-    boolean validate (Move move, Board board) throws IOException;
+    ValidateResult validate(BoardPosition from, BoardPosition to, Board board, String movingColor);
+    ValidateResult validate(ParsedPosition from, ParsedPosition to, Board board, String movingColor);
 }

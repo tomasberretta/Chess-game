@@ -1,16 +1,23 @@
-package australchess.movevalidator;
+package australchess.moverule;
 
 import australchess.board.CheckDetector;
 import australchess.board.DefaultCheckDetector;
 import australchess.board.Board;
-import australchess.movegenerator.Move;
+import australchess.movevalidator.DefaultMoveValidator;
+import australchess.movevalidator.Move;
+import australchess.movevalidator.MoveValidator;
 import australchess.piece.Piece;
 import australchess.piece.Type;
 
 import java.util.Objects;
 
-public class CheckRule implements MoveValidator {
-    CheckDetector checkDetector = new DefaultCheckDetector();
+public class CheckRule implements MoveRule {
+    CheckDetector checkDetector;
+
+    public CheckRule(MoveValidator moveValidator) {
+        checkDetector = new DefaultCheckDetector(moveValidator);
+    }
+
     @Override
     public boolean validate(Move move, Board board) {
         boolean result = true;

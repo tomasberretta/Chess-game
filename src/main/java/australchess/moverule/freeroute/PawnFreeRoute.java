@@ -1,11 +1,14 @@
-package australchess.movevalidator;
+package australchess.moverule.freeroute;
 
 import australchess.board.Board;
-import australchess.movegenerator.Move;
+import australchess.movevalidator.Move;
+import australchess.piece.Type;
 
 import java.util.Objects;
 
 public class PawnFreeRoute implements FreeRoute {
+    Type type = Type.PAWN;
+
     @Override
     public boolean validate(Move move, Board board) {
         int dirY = move.getTo().getNumber() > move.getFrom().getNumber() ? 1 : -1;
@@ -20,5 +23,10 @@ public class PawnFreeRoute implements FreeRoute {
             return !Objects.equals(move.getTo().getPiece().getColor(), move.getFrom().getPiece().getColor());
         }
         return true;
+    }
+
+    @Override
+    public Type getType() {
+        return type;
     }
 }

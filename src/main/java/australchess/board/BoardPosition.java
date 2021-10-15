@@ -12,7 +12,7 @@ public @Data class BoardPosition {
     private @Getter @Setter Integer number;
     private @Getter @Setter Character letter;
 
-    public BoardPosition(Piece piece, Integer number, Character letter) {
+    public BoardPosition(Piece piece, Character letter, Integer number) {
         this.piece = piece;
         this.number = number;
         this.letter = letter;

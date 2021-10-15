@@ -1,22 +1,25 @@
 package australchess.board;
 
-import australchess.movegenerator.MoveResult;
+import australchess.movevalidator.MoveValidator;
+import australchess.movevalidator.ValidateResult;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 public class DefaultCheckDetector implements CheckDetector {
+    MoveValidator moveValidator;
+
+    public DefaultCheckDetector(MoveValidator moveValidator) {
+        this.moveValidator = moveValidator;
+    }
+
     @Override
     public boolean validate(Board board, String movingColor, String oppositeColor) {
         BoardPosition ownKingPosition = board.getKingPositionByColor(movingColor);
         List<BoardPosition> oppositePositions = board.getPositionsByColor(oppositeColor);
         for (BoardPosition oppositePosition : oppositePositions) {
-            try {
-                MoveResult result = board.validateMovePiece(new ParsedPosition(oppositePosition.getLetter(), oppositePosition.getNumber()), new ParsedPosition(ownKingPosition.getLetter(), ownKingPosition.getNumber()), oppositeColor);
-                if (result != null) return true;
-            } catch (IOException ignored) {
-            }
+            ValidateResult result = moveValidator.validate(new ParsedPosition(oppositePosition.getLetter(), oppositePosition.getNumber()), new ParsedPosition(ownKingPosition.getLetter(), ownKingPosition.getNumber()), board, oppositeColor);
+            if(result.isValid()) return true;
         }
         return false;
     }
@@ -26,15 +29,6 @@ public class DefaultCheckDetector implements CheckDetector {
         String oppositeColor;
         if(Objects.equals(movingColor, "White")) oppositeColor = "Black";
         else oppositeColor = "White";
-        BoardPosition ownKingPosition = board.getKingPositionByColor(movingColor);
-        List<BoardPosition> oppositePositions = board.getPositionsByColor(oppositeColor);
-        for (BoardPosition oppositePosition : oppositePositions) {
-            try {
-                MoveResult result = board.validateMovePiece(new ParsedPosition(oppositePosition.getLetter(), oppositePosition.getNumber()), new ParsedPosition(ownKingPosition.getLetter(), ownKingPosition.getNumber()), oppositeColor);
-                if (result != null) return true;
-            } catch (IOException ignored) {
-            }
-        }
-        return false;
+        return validate(board, movingColor, oppositeColor);
     }
 }

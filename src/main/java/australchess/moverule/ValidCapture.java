@@ -1,9 +1,9 @@
-package australchess.movevalidator;
+package australchess.moverule;
 
 import australchess.board.Board;
-import australchess.movegenerator.Move;
+import australchess.movevalidator.Move;
 
-public class ValidCapture implements MoveValidator {
+public class ValidCapture implements MoveRule {
     @Override
     public boolean validate(Move move, Board board) {
         if(move.getTo().getPiece() == null) return true;

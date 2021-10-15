@@ -1,12 +1,12 @@
 package australchess.board;
 
-import australchess.movegenerator.MoveResult;
+import australchess.movevalidator.Move;
+import australchess.movevalidator.MoveResult;
 import australchess.piece.Piece;
 import australchess.piece.Queen;
 import australchess.piece.Type;
 import lombok.Getter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +32,7 @@ public class Board {
 
         for (Character file : files) {
             for (Integer rank : ranks) {
-                positions.add(new BoardPosition(null, rank, file));
+                positions.add(new BoardPosition(null,file, rank));
             }
         }
     }
@@ -49,7 +49,7 @@ public class Board {
         boardPosition.setPiece(piece);
     }
 
-    BoardPosition getBoardPositionFromParsed(ParsedPosition parsedPosition){
+    public BoardPosition getBoardPositionFromParsed(ParsedPosition parsedPosition){
         for (BoardPosition position : positions) {
             if (Objects.equals(position.getNumber(), parsedPosition.getNumber()) && Objects.equals(position.getLetter(), parsedPosition.getLetter())) return position;
         }
@@ -84,12 +84,15 @@ public class Board {
         return colorPositions;
     }
 
-    public MoveResult movePiece(ParsedPosition from, ParsedPosition to, String movingColor) throws IOException {
-        MoveResult moveResult = validateMovePiece(from, to,movingColor);
-        if(moveResult.getPMoved().getType() == Type.PAWN && Objects.equals(moveResult.getPMoved().getColor(), "White") && (moveResult.getMove().getTo().getNumber() == 8)) {
+    public MoveResult movePiece(ParsedPosition fromP, ParsedPosition toP) {
+        BoardPosition from = getBoardPositionFromParsed(fromP);
+        BoardPosition to = getBoardPositionFromParsed(toP);
+        Move move = new Move(from, to);
+        MoveResult moveResult = new MoveResult(move, from.getPiece(), to.getPiece());
+        if(moveResult.getPMoved().getType() == Type.PAWN && Objects.equals(moveResult.getPMoved().getColor(), "White") && (Objects.equals(moveResult.getMove().getTo().getNumber(), ranks.get(0)))) {
             putPieceInBoardPosition(new Queen("White", false), moveResult.getMove().getTo());
         }
-        else if (moveResult.getPMoved().getType() == Type.PAWN && Objects.equals(moveResult.getPMoved().getColor(), "Black") && (moveResult.getMove().getTo().getNumber() == 1)){
+        else if (moveResult.getPMoved().getType() == Type.PAWN && Objects.equals(moveResult.getPMoved().getColor(), "Black") && (Objects.equals(moveResult.getMove().getTo().getNumber(), ranks.get(ranks.size() - 1)))){
             putPieceInBoardPosition(new Queen("Black", true), moveResult.getMove().getTo());
         }
         else{
@@ -99,17 +102,5 @@ public class Board {
         return moveResult;
     }
 
-    public MoveResult validateMovePiece(ParsedPosition from, ParsedPosition to, String movingColor) throws IOException {
-        BoardPosition fromP = getBoardPositionFromParsed(from);
-        BoardPosition toP = getBoardPositionFromParsed(to);
-        return validateMovePiece(fromP,toP, movingColor);
-    }
-
-    public MoveResult validateMovePiece(BoardPosition from, BoardPosition to, String movingColor) throws IOException {
-        if(from == null) throw new IOException("Invalid piece position");
-        if(from.getPiece() == null) throw new IOException("No piece in position");
-        if(to == null) throw new IOException("Target position out of limits");
-        return from.getPiece().move(from, to, this, movingColor);
-    }
 
 }

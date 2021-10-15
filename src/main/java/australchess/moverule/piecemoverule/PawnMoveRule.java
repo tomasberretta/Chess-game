@@ -1,43 +1,44 @@
-package australchess.movegenerator;
+package australchess.moverule.piecemoverule;
 
 import australchess.board.Board;
 import australchess.board.BoardPosition;
-import australchess.movevalidator.CheckRule;
-import australchess.movevalidator.FreeRoute;
-import australchess.movevalidator.PawnFreeRoute;
-import australchess.movevalidator.ValidCapture;
+import australchess.movevalidator.Move;
 import australchess.piece.Pawn;
+import australchess.piece.Piece;
+import australchess.piece.Type;
 
-import java.io.IOException;
-
-public class PawnMoveGenerator implements MoveGenerator {
-    ValidCapture validCapture = new ValidCapture();
-    FreeRoute freeRoute = new PawnFreeRoute();
-    CheckRule checkRule = new CheckRule();
+public class PawnMoveRule implements PieceMoveRule {
+    Type type = Type.PAWN;
 
     @Override
-    public MoveResult genMove(BoardPosition from, BoardPosition to, Board board, String movingColor) throws IOException {
-        Move move = new Move(from, to);
-        if(!from.getPiece().getColor().equals(movingColor)) throw new IOException("Only your own pieces can be moved");
-        MoveResult moveResult = new MoveResult(move, from.getPiece(), to.getPiece());
-        boolean moved = ((Pawn) from.getPiece()).isMoved();
-        if (!validCapture.validate(move,board)) throw new IOException("Own pieces cannot be taken");
+    public boolean validate(Move move, Board board){
+        Piece piece = move.getFrom().getPiece();
+        String movingColor = piece.getColor();
+        BoardPosition from = move.getFrom();
+        BoardPosition to = move.getTo();
+        boolean moved = false;
+        if(piece.getType() == Type.PAWN){
+            moved = ((Pawn)piece).isMoved();
+        }
         if(movingColor.equals("White")){
             if(!((!moved && (to.getNumber() == from.getNumber()+1 || to.getNumber() == from.getNumber()+2) && to.getLetter() == from.getLetter())
                     ||(!moved && (to.getNumber() == from.getNumber()+1) && (to.getLetter() == from.getLetter()+1 || to.getLetter() == from.getLetter()-1) && to.getPiece() != null)
                     || (moved && to.getNumber() == from.getNumber()+1 && to.getLetter() == from.getLetter())
                     || (moved && to.getNumber() == from.getNumber()+1 && (to.getLetter() == from.getLetter()+1 || to.getLetter() == from.getLetter()-1) && to.getPiece() != null)
-            ))throw new IOException("Illegal Pawn move");
+            )) return false;
         }else{
             if(!((!moved && (to.getNumber() == from.getNumber()-1 || to.getNumber() == from.getNumber()-2) && to.getLetter() == from.getLetter())
                     ||(!moved && (to.getNumber() == from.getNumber()-1) && (to.getLetter() == from.getLetter()+1 || to.getLetter() == from.getLetter()-1) && to.getPiece() != null)
                     || (moved && to.getNumber() == from.getNumber()-1 && to.getLetter() == from.getLetter())
                     || (moved && to.getNumber() == from.getNumber()-1 && (to.getLetter() == from.getLetter()+1 || to.getLetter() == from.getLetter()-1) && to.getPiece() != null)
-            ))throw new IOException("Illegal Pawn move");
+            )) return false;
         }
-        if(!freeRoute.validate(move, board)) throw new IOException("Route is not clear");
-        if(!checkRule.validate(move,board)) throw new IOException("This move would put player on check");
-        ((Pawn) from.getPiece()).setMoved(true);
-        return moveResult;
+        ((Pawn) piece).setMoved(true);
+        return true;
+    }
+
+    @Override
+    public Type getType() {
+        return type;
     }
 }

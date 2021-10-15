@@ -1,6 +1,5 @@
 package australchess.piece;
 
-import australchess.movegenerator.PawnMoveGenerator;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +14,5 @@ public class Pawn extends Piece{
         if (lowerCase) id = Character.toLowerCase(id);
         this.type = Type.PAWN;
         moved = false;
-        moveGenerator = new PawnMoveGenerator();
     }
 }

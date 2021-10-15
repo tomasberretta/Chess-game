@@ -1,4 +1,4 @@
-package australchess.movegenerator;
+package australchess.movevalidator;
 
 import australchess.piece.Piece;
 import lombok.Data;

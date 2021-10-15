@@ -1,13 +1,14 @@
 package australchess.cli;
 
 import australchess.board.*;
+import australchess.movevalidator.DefaultMoveValidator;
+import australchess.movevalidator.MoveValidator;
+import australchess.movevalidator.ValidateResult;
 import australchess.piece.DefaultPieceSetFactory;
 import australchess.piece.Piece;
 import australchess.piece.PieceSetFactory;
 import australchess.piece.Type;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,6 +16,7 @@ public class ValidCaptureTest {
     static Board board;
     static BoardFactory boardFactory = new DefaultBoardFactory();
     static PieceSetFactory pieceSetFactory = new DefaultPieceSetFactory();
+    static MoveValidator moveValidator = new DefaultMoveValidator();
     static IO io = new IO();
 
     public void setUp(){
@@ -33,14 +35,12 @@ public class ValidCaptureTest {
         boardFactory.addPieceToBoard(board, pieces[1], 4,4);
         boardFactory.addPieceToBoard(board, pieces[2], 3,7);
 
-        try {
-            board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('d', 4), "White");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("Own pieces cannot be taken");
-
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 4),new ParsedPosition('d', 4), board, "White");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('d', 4));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
-
+        assertThat(validateResult.getMessage()).isEqualTo("Own pieces cannot be taken");
         assertThat(board.getPosition('e',4).getPiece()).isNotNull();
         assertThat(board.getPosition('d',4).getPiece()).isNotNull();
     }
@@ -57,14 +57,11 @@ public class ValidCaptureTest {
         boardFactory.addPieceToBoard(board, pieces[1], 4,4);
         boardFactory.addPieceToBoard(board, pieces[2], 3,7);
 
-        try {
-            board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('e', 5), "White");
-        } catch (IOException e) {
-            assertThat(e.getMessage()).isEqualTo("");
-
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 4),new ParsedPosition('e', 5), board, "White");
+        assertThat(validateResult.isValid()).isTrue();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('e', 5));
         }
-        io.printBoard(new DefaultBoardPrinter(), board);
-
         assertThat(board.getPosition('e',4).getPiece()).isNull();
         assertThat(board.getPosition('e',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',5).getPiece().getType()).isEqualTo(Type.QUEEN);
