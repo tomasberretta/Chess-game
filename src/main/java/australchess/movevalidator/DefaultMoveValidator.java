@@ -4,14 +4,10 @@ import australchess.board.Board;
 import australchess.board.BoardPosition;
 import australchess.board.ParsedPosition;
 import australchess.moverule.*;
-import australchess.moverule.freeroute.BishopFreeRoute;
-import australchess.moverule.freeroute.FreeRoute;
-import australchess.moverule.freeroute.PawnFreeRoute;
-import australchess.moverule.freeroute.RookFreeRoute;
+import australchess.moverule.freeroute.*;
 import australchess.moverule.piecemoverule.*;
 import australchess.piece.Type;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,6 +17,7 @@ public class DefaultMoveValidator implements MoveValidator {
     List<FreeRoute> freeRoutes = List.of(new PawnFreeRoute(), new BishopFreeRoute(), new RookFreeRoute());
     List<PieceMoveRule> pieceMoveRules = List.of(new PawnMoveRule(), new BishopMoveRule(), new KnightMoveRule(), new RookMoveRule(), new KingMoveRule(), new QueenMoveRule());
     CheckRule checkRule = new CheckRule(this);
+    CastleRule castleRule = new CastleRule();
 
 
     @Override
@@ -63,6 +60,7 @@ public class DefaultMoveValidator implements MoveValidator {
                             result.setMessage("Route is not clear");
                             return result;
                         }
+                        break;
                     }
                 }
             }else{
@@ -73,6 +71,7 @@ public class DefaultMoveValidator implements MoveValidator {
                             result.setMessage("Route is not clear");
                             return result;
                         }
+                        break;
                     }
                 }
             }
@@ -88,10 +87,24 @@ public class DefaultMoveValidator implements MoveValidator {
                 }
             }
         }
-        if(!checkRule.validate(move,board)){
-            result.setValid(false);
-            result.setMessage("This move would put player on check");
-            return result;
+        if(pieceType == Type.KING && Math.abs(to.getLetter() - from.getLetter()) == 2){
+            if(!castleRule.validate(move,board)){
+                result.setValid(false);
+                result.setMessage("Illegal Castling");
+                return result;
+            }else{
+                if(!checkRule.validateForCastle(move,board)){
+                    result.setValid(false);
+                    result.setMessage("This move would put player on check");
+                    return result;
+                }
+            }
+        }else{
+            if(!checkRule.validate(move,board)){
+                result.setValid(false);
+                result.setMessage("This move would put player on check");
+                return result;
+            }
         }
         return result;
     }

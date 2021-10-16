@@ -21,18 +21,13 @@ public class App {
     static CheckDetector checkDetector;
     static MoveValidator moveValidator;
     static List<MoveResult> moves;
-    static IO io;
+    static IO io = new IO();
+
 
     public static void main(String[] args) throws IOException {
-
-        io = new IO();
-
         final BoardPrinter boardPrinter = new DefaultBoardPrinter();
-
         printHeader();
-
         setUpGame(2, new String[]{"White", "Black"}, "Default");
-
         printSpaces(2);
 
         while(shouldContinue()) {
@@ -42,14 +37,10 @@ public class App {
             printBoard(boardPrinter, board);
             final var positionFrom = askForPosition("Enter position of the piece you want to move");
             final var positionTo = askForPosition("Enter position of cell you want to move it to");
+            printSpaces(1);
             ValidateResult validateResult = validateMove(positionFrom,positionTo);
-            try {
-                if(!validateResult.isValid()) throw new IOException(validateResult.getMessage());
-                else move(positionFrom, positionTo);
-            }catch (IOException e){
-                printSpaces(2);
-                System.out.println(e.getMessage());
-            }
+            if(!validateResult.isValid()) System.out.println(validateResult.getMessage());
+            else move(positionFrom, positionTo);
             printSpaces(2);
         }
         printSpaces(2);
@@ -57,10 +48,10 @@ public class App {
         printCurrentStatus();
         printBoard(boardPrinter, board);
         printMoves();
-
     }
 
     private static void printMoves() {
+        System.out.println("Moves in game: ");
         for (int i = 0; i < moves.size(); i++) {
             MoveResult moveResult= moves.get(i);
             Piece pTook = moveResult.getPTook();
@@ -93,7 +84,7 @@ public class App {
         io.printBoard(boardPrinter, board);
     }
 
-    private static void move(ParsedPosition from, ParsedPosition to) throws IOException {
+    private static void move(ParsedPosition from, ParsedPosition to) {
         MoveResult moveResult = board.movePiece(from, to);
         moves.add(moveResult);
         if (playerTurn >= players.length-1) playerTurn = 0;
@@ -139,7 +130,6 @@ public class App {
                     moves.add(new Move(boardPosition, position));
                     return moves;
                 }
-
             }
         }
         return moves;

@@ -2,9 +2,7 @@ package australchess.board;
 
 import australchess.movevalidator.Move;
 import australchess.movevalidator.MoveResult;
-import australchess.piece.Piece;
-import australchess.piece.Queen;
-import australchess.piece.Type;
+import australchess.piece.*;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -87,19 +85,44 @@ public class Board {
     public MoveResult movePiece(ParsedPosition fromP, ParsedPosition toP) {
         BoardPosition from = getBoardPositionFromParsed(fromP);
         BoardPosition to = getBoardPositionFromParsed(toP);
-        Move move = new Move(from, to);
-        MoveResult moveResult = new MoveResult(move, from.getPiece(), to.getPiece());
-        if(moveResult.getPMoved().getType() == Type.PAWN && Objects.equals(moveResult.getPMoved().getColor(), "White") && (Objects.equals(moveResult.getMove().getTo().getNumber(), ranks.get(0)))) {
-            putPieceInBoardPosition(new Queen("White", false), moveResult.getMove().getTo());
+        Piece movedPiece = from.getPiece();
+        Piece tookPiece = to.getPiece();
+        if(movedPiece.getType() == Type.PAWN && Objects.equals(movedPiece.getColor(), "White") && (Objects.equals(to.getNumber(), ranks.get(0)))) {
+            putPieceInBoardPosition(new Queen("White", false), to);
         }
-        else if (moveResult.getPMoved().getType() == Type.PAWN && Objects.equals(moveResult.getPMoved().getColor(), "Black") && (Objects.equals(moveResult.getMove().getTo().getNumber(), ranks.get(ranks.size() - 1)))){
-            putPieceInBoardPosition(new Queen("Black", true), moveResult.getMove().getTo());
+        else if (movedPiece.getType() == Type.PAWN && Objects.equals(movedPiece.getColor(), "Black") && (Objects.equals(to.getNumber(), ranks.get(ranks.size() - 1)))){
+            putPieceInBoardPosition(new Queen("Black", true), to);
         }
-        else{
-            putPieceInBoardPosition(moveResult.getPMoved(), moveResult.getMove().getTo());
+        else if(movedPiece.getType() == Type.KING && Math.abs(to.getLetter() - from.getLetter()) == 2){
+            int dirX = to.getLetter() > from.getLetter() ? 1 : -1;
+            char letTo = to.getLetter();
+            int numFrom = from.getNumber();
+            Rook rookToMove;
+            if(dirX > 0){
+                rookToMove = (Rook) getPosition((char) (letTo+1), numFrom).getPiece();
+                putPieceInBoardPosition(rookToMove, getPosition((char) (letTo-1), numFrom));
+                putPieceInBoardPosition(null, getPosition((char) (letTo+1), numFrom));
+            }else{
+                rookToMove = (Rook) getPosition((char) (letTo - 2), numFrom).getPiece();
+                putPieceInBoardPosition(rookToMove, getPosition((char) (letTo+1), numFrom));
+                putPieceInBoardPosition(null, getPosition((char) (letTo-2), numFrom));
+            }
+            setMoved(rookToMove);
+            putPieceInBoardPosition(movedPiece, to);
+        } else {
+            putPieceInBoardPosition(movedPiece, to);
         }
-        putPieceInBoardPosition(null, moveResult.getMove().getFrom());
-        return moveResult;
+        putPieceInBoardPosition(null, from);
+        setMoved(movedPiece);
+        return new MoveResult(new Move(from, to), movedPiece, tookPiece);
+    }
+
+    void setMoved(Piece piece){
+        switch (piece.getType()){
+            case PAWN -> ((Pawn) piece).setMoved(true);
+            case ROOK -> ((Rook) piece).setMoved(true);
+            case KING -> ((King) piece).setMoved(true);
+        }
     }
 
 

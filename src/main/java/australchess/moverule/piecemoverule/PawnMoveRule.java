@@ -21,20 +21,16 @@ public class PawnMoveRule implements PieceMoveRule {
             moved = ((Pawn)piece).isMoved();
         }
         if(movingColor.equals("White")){
-            if(!((!moved && (to.getNumber() == from.getNumber()+1 || to.getNumber() == from.getNumber()+2) && to.getLetter() == from.getLetter())
-                    ||(!moved && (to.getNumber() == from.getNumber()+1) && (to.getLetter() == from.getLetter()+1 || to.getLetter() == from.getLetter()-1) && to.getPiece() != null)
-                    || (moved && to.getNumber() == from.getNumber()+1 && to.getLetter() == from.getLetter())
-                    || (moved && to.getNumber() == from.getNumber()+1 && (to.getLetter() == from.getLetter()+1 || to.getLetter() == from.getLetter()-1) && to.getPiece() != null)
-            )) return false;
+            return (!moved && (to.getNumber() == from.getNumber() + 1 || to.getNumber() == from.getNumber() + 2) && to.getLetter() == from.getLetter())
+                    || (!moved && (to.getNumber() == from.getNumber() + 1) && (to.getLetter() == from.getLetter() + 1 || to.getLetter() == from.getLetter() - 1) && to.getPiece() != null)
+                    || (moved && to.getNumber() == from.getNumber() + 1 && to.getLetter() == from.getLetter())
+                    || (moved && to.getNumber() == from.getNumber() + 1 && (to.getLetter() == from.getLetter() + 1 || to.getLetter() == from.getLetter() - 1) && to.getPiece() != null);
         }else{
-            if(!((!moved && (to.getNumber() == from.getNumber()-1 || to.getNumber() == from.getNumber()-2) && to.getLetter() == from.getLetter())
-                    ||(!moved && (to.getNumber() == from.getNumber()-1) && (to.getLetter() == from.getLetter()+1 || to.getLetter() == from.getLetter()-1) && to.getPiece() != null)
-                    || (moved && to.getNumber() == from.getNumber()-1 && to.getLetter() == from.getLetter())
-                    || (moved && to.getNumber() == from.getNumber()-1 && (to.getLetter() == from.getLetter()+1 || to.getLetter() == from.getLetter()-1) && to.getPiece() != null)
-            )) return false;
+            return (!moved && (to.getNumber() == from.getNumber() - 1 || to.getNumber() == from.getNumber() - 2) && to.getLetter() == from.getLetter())
+                    || (!moved && (to.getNumber() == from.getNumber() - 1) && (to.getLetter() == from.getLetter() + 1 || to.getLetter() == from.getLetter() - 1) && to.getPiece() != null)
+                    || (moved && to.getNumber() == from.getNumber() - 1 && to.getLetter() == from.getLetter())
+                    || (moved && to.getNumber() == from.getNumber() - 1 && (to.getLetter() == from.getLetter() + 1 || to.getLetter() == from.getLetter() - 1) && to.getPiece() != null);
         }
-        ((Pawn) piece).setMoved(true);
-        return true;
     }
 
     @Override
