@@ -17,7 +17,6 @@ public class ValidCaptureTest {
     static BoardFactory boardFactory = new DefaultBoardFactory();
     static PieceSetFactory pieceSetFactory = new DefaultPieceSetFactory();
     static MoveValidator moveValidator = new DefaultMoveValidator();
-    static IO io = new IO();
 
     public void setUp(){
         board = boardFactory.makeEmptyBoard();

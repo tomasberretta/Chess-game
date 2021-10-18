@@ -18,7 +18,6 @@ public class CheckRuleTest {
     static BoardFactory boardFactory = new DefaultBoardFactory();
     static PieceSetFactory pieceSetFactory = new DefaultPieceSetFactory();
     static MoveValidator moveValidator = new DefaultMoveValidator();
-    static IO io = new IO();
 
     public void setUp(){
         board = boardFactory.makeEmptyBoard();
@@ -93,6 +92,37 @@ public class CheckRuleTest {
     }
 
     @Test
+    public void cannot_move_queen_away_from_protecting_king() {
+        setUp();
+        Piece[] pieces = pieceSetFactory.makeSpecificPieceSet("Black", true, new Type[]{Type.QUEEN,Type.KING});
+        boardFactory.addPieceToBoard(board, pieces[0], 4,3);
+        boardFactory.addPieceToBoard(board, pieces[1], 4,0);
+
+        pieces = pieceSetFactory.makeSpecificPieceSet("White", false, new Type[]{Type.PAWN,Type.QUEEN, Type.KING});
+        boardFactory.addPieceToBoard(board, pieces[0], 3,4);
+        boardFactory.addPieceToBoard(board, pieces[1], 4,7);
+        boardFactory.addPieceToBoard(board, pieces[2], 3,7);
+
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 5),new ParsedPosition('f', 6), board,  "Black");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 5),new ParsedPosition('f', 6));
+        }
+        assertThat(validateResult.getMessage()).isEqualTo("This move would put player on check");
+        assertThat(board.getPosition('e',5).getPiece()).isNotNull();
+        assertThat(board.getPosition('e',8).getPiece()).isNotNull();
+
+        validateResult = moveValidator.validate(new ParsedPosition('e', 5),new ParsedPosition('d', 5), board,  "Black");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 5),new ParsedPosition('d', 5));
+        }
+        assertThat(validateResult.getMessage()).isEqualTo("This move would put player on check");
+        assertThat(board.getPosition('e',5).getPiece()).isNotNull();
+        assertThat(board.getPosition('e',8).getPiece()).isNotNull();
+    }
+
+    @Test
     public void cannot_move_knight_away_from_protecting_king() {
         setUp();
         Piece[] pieces = pieceSetFactory.makeSpecificPieceSet("Black", true, new Type[]{Type.KNIGHT,Type.KING});
@@ -137,9 +167,10 @@ public class CheckRuleTest {
     @Test
     public void move_pawn_away_and_check_king() {
         setUp();
-        Piece[] pieces = pieceSetFactory.makeSpecificPieceSet("Black", true, new Type[]{Type.PAWN,Type.KING});
+        Piece[] pieces = pieceSetFactory.makeSpecificPieceSet("Black", true, new Type[]{Type.PAWN,Type.KING,Type.PAWN});
         boardFactory.addPieceToBoard(board, pieces[0], 3,3);
         boardFactory.addPieceToBoard(board, pieces[1], 4,0);
+        boardFactory.addPieceToBoard(board, pieces[2], 5,1);
 
         pieces = pieceSetFactory.makeSpecificPieceSet("White", false, new Type[]{Type.PAWN,Type.QUEEN, Type.KING});
         boardFactory.addPieceToBoard(board, pieces[0], 4,4);
@@ -153,14 +184,24 @@ public class CheckRuleTest {
         }
         assertThat(board.getPosition('d',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',4).getPiece()).isNull();
+
+        validateResult = moveValidator.validate(new ParsedPosition('f', 7),new ParsedPosition('f', 6), board,  "Black");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('f', 7),new ParsedPosition('f', 6));
+        }
+        assertThat(validateResult.getMessage()).isEqualTo("This move would put player on check");
+        assertThat(board.getPosition('f',7).getPiece()).isNotNull();
+        assertThat(board.getPosition('f',6).getPiece()).isNull();
     }
 
     @Test
     public void move_bishop_away_and_check_king() {
         setUp();
-        Piece[] pieces = pieceSetFactory.makeSpecificPieceSet("Black", true, new Type[]{Type.PAWN,Type.KING});
+        Piece[] pieces = pieceSetFactory.makeSpecificPieceSet("Black", true, new Type[]{Type.PAWN,Type.KING,Type.PAWN});
         boardFactory.addPieceToBoard(board, pieces[0], 3,3);
         boardFactory.addPieceToBoard(board, pieces[1], 4,0);
+        boardFactory.addPieceToBoard(board, pieces[2], 5,1);
 
         pieces = pieceSetFactory.makeSpecificPieceSet("White", false, new Type[]{Type.BISHOP,Type.QUEEN, Type.KING});
         boardFactory.addPieceToBoard(board, pieces[0], 4,4);
@@ -174,14 +215,25 @@ public class CheckRuleTest {
         }
         assertThat(board.getPosition('d',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',4).getPiece()).isNull();
+
+        validateResult = moveValidator.validate(new ParsedPosition('f', 7),new ParsedPosition('f', 6), board,  "Black");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('f', 7),new ParsedPosition('f', 6));
+        }
+        assertThat(validateResult.getMessage()).isEqualTo("This move would put player on check");
+        assertThat(board.getPosition('f',7).getPiece()).isNotNull();
+        assertThat(board.getPosition('f',6).getPiece()).isNull();
     }
 
     @Test
     public void move_rook_away_and_check_king() {
         setUp();
-        Piece[] pieces = pieceSetFactory.makeSpecificPieceSet("Black", true, new Type[]{Type.PAWN,Type.KING});
+        Piece[] pieces = pieceSetFactory.makeSpecificPieceSet("Black", true, new Type[]{Type.PAWN,Type.KING,Type.PAWN});
         boardFactory.addPieceToBoard(board, pieces[0], 3,3);
         boardFactory.addPieceToBoard(board, pieces[1], 4,0);
+        boardFactory.addPieceToBoard(board, pieces[2], 5,1);
+
 
         pieces = pieceSetFactory.makeSpecificPieceSet("White", false, new Type[]{Type.ROOK,Type.QUEEN, Type.KING});
         boardFactory.addPieceToBoard(board, pieces[0], 4,4);
@@ -195,14 +247,24 @@ public class CheckRuleTest {
         }
         assertThat(board.getPosition('d',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',4).getPiece()).isNull();
+
+        validateResult = moveValidator.validate(new ParsedPosition('f', 7),new ParsedPosition('f', 6), board,  "Black");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('f', 7),new ParsedPosition('f', 6));
+        }
+        assertThat(validateResult.getMessage()).isEqualTo("This move would put player on check");
+        assertThat(board.getPosition('f',7).getPiece()).isNotNull();
+        assertThat(board.getPosition('f',6).getPiece()).isNull();
     }
 
     @Test
     public void move_knight_away_and_check_king() {
         setUp();
-        Piece[] pieces = pieceSetFactory.makeSpecificPieceSet("Black", true, new Type[]{Type.PAWN,Type.KING});
+        Piece[] pieces = pieceSetFactory.makeSpecificPieceSet("Black", true, new Type[]{Type.PAWN,Type.KING,Type.PAWN});
         boardFactory.addPieceToBoard(board, pieces[0], 3,3);
         boardFactory.addPieceToBoard(board, pieces[1], 4,0);
+        boardFactory.addPieceToBoard(board, pieces[2], 5,1);
 
         pieces = pieceSetFactory.makeSpecificPieceSet("White", false, new Type[]{Type.KNIGHT,Type.QUEEN, Type.KING});
         boardFactory.addPieceToBoard(board, pieces[0], 4,4);
@@ -216,6 +278,15 @@ public class CheckRuleTest {
         }
         assertThat(board.getPosition('d',5).getPiece()).isNotNull();
         assertThat(board.getPosition('e',4).getPiece()).isNull();
+
+        validateResult = moveValidator.validate(new ParsedPosition('f', 7),new ParsedPosition('f', 6), board,  "Black");
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('f', 7),new ParsedPosition('f', 6));
+        }
+        assertThat(validateResult.getMessage()).isEqualTo("This move would put player on check");
+        assertThat(board.getPosition('f',7).getPiece()).isNotNull();
+        assertThat(board.getPosition('f',6).getPiece()).isNull();
     }
 
     @Test

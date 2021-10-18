@@ -1,9 +1,6 @@
 package australchess.cli;
 
-import australchess.board.Board;
-import australchess.board.BoardFactory;
-import australchess.board.DefaultBoardFactory;
-import australchess.board.ParsedPosition;
+import australchess.board.*;
 import australchess.movevalidator.DefaultMoveValidator;
 import australchess.movevalidator.MoveValidator;
 import australchess.movevalidator.ValidateResult;
@@ -20,7 +17,6 @@ public class FreeRouteTest {
     static BoardFactory boardFactory = new DefaultBoardFactory();
     static PieceSetFactory pieceSetFactory = new DefaultPieceSetFactory();
     static MoveValidator moveValidator = new DefaultMoveValidator();
-    static IO io = new IO();
 
     public void setUp(){
         board = boardFactory.makeEmptyBoard();
@@ -141,5 +137,36 @@ public class FreeRouteTest {
         assertThat(validateResult.getMessage()).isEqualTo("Route is not clear");
         assertThat(board.getPosition('e',4).getPiece()).isNotNull();
         assertThat(board.getPosition('g',4).getPiece()).isNull();
+    }
+
+    @Test
+    public void pawn_cannot_move_over_straight() {
+        setUp();
+        Piece[] pieces = pieceSetFactory.makeSpecificPieceSet("Black", true, new Type[]{Type.PAWN,Type.PAWN,Type.PAWN,Type.PAWN,Type.PAWN,Type.PAWN,Type.PAWN,Type.PAWN, Type.PAWN});
+        int i = 3;
+        int j = 3;
+        for (Piece piece : pieces) {
+            boardFactory.addPieceToBoard(board, piece, i,j);
+            i++;
+            if(i > 5){
+                i = 3;
+                j++;
+            }
+        }
+        pieces = pieceSetFactory.makeSpecificPieceSet("White", false, new Type[]{Type.PAWN});
+        for (Piece piece : pieces) {
+            boardFactory.addPieceToBoard(board, piece, 4,4);
+        }
+
+        String movingColor = "White";
+
+        ValidateResult validateResult = moveValidator.validate(new ParsedPosition('e', 4),new ParsedPosition('e', 6), board, movingColor);
+        assertThat(validateResult.isValid()).isFalse();
+        if(validateResult.isValid()){
+            board.movePiece(new ParsedPosition('e', 4),new ParsedPosition('e', 6));
+        }
+        assertThat(validateResult.getMessage()).isEqualTo("Route is not clear");
+        assertThat(board.getPosition('e',4).getPiece()).isNotNull();
+        assertThat(board.getPosition('e',6).getPiece()).isNull();
     }
 }
